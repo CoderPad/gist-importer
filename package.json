@@ -1,0 +1,25 @@
+{
+  "name": "gist-pad-importer",
+  "version": "0.0.1-alpha.1",
+  "description": "Import GitHub Gists as CoderPad Pads",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoderPad/gist-importer.git"
+  },
+  "keywords": [
+    "github",
+    "gist",
+    "coderpad",
+    "pad"
+  ],
+  "author": "Corbin Crutchley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CoderPad/gist-importer/issues"
+  },
+  "homepage": "https://github.com/CoderPad/gist-importer#readme"
+}
