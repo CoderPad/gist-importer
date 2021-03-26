@@ -6,6 +6,20 @@ require("dotenv").config();
 
 const octokit = new Octokit();
 
+/**
+ * @typedef {Object} GistFile
+ * @param {string} filename // EG 'evilAnswer.js'
+ * @param {string} type // EG: 'application/javascript'
+ * @param {string} language // EG: 'JavaScript'
+ * @param {string} raw_url
+ * @param {number} size
+ * @param {boolean} truncated
+ * @param {string} content
+ */
+
+/**
+ * @returns {GistFile}
+ */
 async function getGist() {
   const { data } = await octokit.request("GET /gists/{gist_id}", {
     gist_id: "137ec7db36f98cf6c2aabe0a1890f95a",
@@ -14,14 +28,7 @@ async function getGist() {
   const { files } = data;
 
   /**
-   * @type {Object}
-   * @param {string} filename // EG 'evilAnswer.js'
-   * @param {string} type // EG: 'application/javascript'
-   * @param {string} langauage // EG: 'JavaScript'
-   * @param {string} raw_url
-   * @param {number} size
-   * @param {boolean} truncated
-   * @param {string} content
+   * @type {GistFile | null}
    */
   let selectedFile = null;
 
@@ -44,29 +51,38 @@ async function getGist() {
     throw "There don't seem to be any files in this Gist to import";
   }
 
-  console.log(selectedFile);
+  return selectedFile;
 }
 
-function main() {
-    return getGist();
+const CODERPAD_KEY = process.env.CODERPAD_API;
+
+/**
+ * @param {GistFile} selectedFile 
+ */
+async function getCoderPad(selectedFile) {
+    const url = "https://app.coderpad.io/api/pads";
+
+    const res = await fetch(url, {
+      method: "post",
+      body: JSON.stringify({
+        // title: '',
+        language: selectedFile["language"].toLowerCase(),
+        contents: selectedFile["content"],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token token="${CODERPAD_KEY}"`,
+      },
+    }).then((res) => res.json());
+
+    console.log(res);
 }
 
-// const CODERPAD_KEY = process.env.CODERPAD_API;
-// 
-// async function getCoderPad() {
-//     const url = "https://app.coderpad.io/api/pads?sort=updated_at,desc";
 
-//     const res = await fetch(url, {
-//         // method: "post",
-//         // body: JSON.stringify(body),
-//         headers: {
-//             "Authorization": `Token token="${CODERPAD_KEY}"`
-//          },
-//     })
-//     .then((res) => res.json())
-
-//     console.log(res);
-// }
+async function main() {
+  const selectedFile = await getGist();
+  await getCoderPad(selectedFile);
+}
 
 main()
     .catch(console.error);
